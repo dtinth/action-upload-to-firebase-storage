@@ -11,7 +11,7 @@ inputs:
     description: 'Storage bucket name (gs://__)'
     required: true
   path:
-    description: 'Path to HTML report'
+    description: 'Path to the directory that contains the files to be uploaded'
     required: true
   suffix:
     description: 'Suffix to append to the path'
@@ -35,11 +35,11 @@ runs:
         gsutil -m cp -r '${{ inputs.path }}' "$GS_URL"
         echo "http-url=$HTTP_URL" >> $GITHUB_OUTPUT
         echo "gs-url=$GS_URL" >> $GITHUB_OUTPUT
-        echo "Published HTML report to $HTTP_URL"
+        echo "Uploaded to $HTTP_URL"
 outputs:
   http-url:
-    description: 'HTTP URL to the uploaded HTML report'
+    description: 'HTTP URL to the uploaded directory'
     value: ${{ steps.upload.outputs.http-url }}
   gs-url:
-    description: 'GS URL to the uploaded HTML report'
+    description: 'GS URL to the uploaded directory'
     value: ${{ steps.upload.outputs.gs-url }}
