@@ -1,0 +1,45 @@
+name: 'Upload to Firebase Storage'
+description: 'Upload build/test artifacts (e.g. HTML test reports) to Firebase Storage with OIDC'
+inputs:
+  workload-identity-provider:
+    description: 'Workload Identity Provider ID (projects/__/locations/global/workloadIdentityPools/__/providers/__)'
+    required: true
+  service-account:
+    description: 'Service account email (__@__.iam.gserviceaccount.com)'
+    required: true
+  storage-prefix:
+    description: 'Storage bucket name (gs://__)'
+    required: true
+  path:
+    description: 'Path to HTML report'
+    required: true
+  suffix:
+    description: 'Suffix to append to the path'
+    default: 'report'
+runs:
+  using: 'composite'
+  steps:
+    - name: Authenticate to Google Cloud
+      uses: 'google-github-actions/auth@v1'
+      with:
+        workload_identity_provider: ${{ inputs.workload-identity-provider }}
+        service_account: ${{ inputs.service-account }}
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+    - name: 'Upload to Firebase Storage'
+      shell: bash
+      id: upload
+      run: |
+        GS_URL='${{ inputs.storage-prefix }}/${{ github.repository }}/${{ github.run_id }}/${{ github.run_attempt }}/${{ inputs.suffix }}'
+        HTTP_URL="$(echo "$GS_URL" | sed 's/gs:\/\//https:\/\/storage.googleapis.com\//')"
+        gsutil -m cp -r '${{ inputs.path }}' "$GS_URL"
+        echo "http-url=$HTTP_URL" >> $GITHUB_OUTPUT
+        echo "gs-url=$GS_URL" >> $GITHUB_OUTPUT
+        echo "Published HTML report to $HTTP_URL"
+outputs:
+  http-url:
+    description: 'HTTP URL to the uploaded HTML report'
+    value: ${{ steps.upload.outputs.http-url }}
+  gs-url:
+    description: 'GS URL to the uploaded HTML report'
+    value: ${{ steps.upload.outputs.gs-url }}
