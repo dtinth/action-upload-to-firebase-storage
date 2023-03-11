@@ -1,6 +1,19 @@
 # action-upload-to-firebase-storage
 GitHub Actions to upload build/test artifacts (e.g. HTML test reports) to Firebase Storage with OIDC.
 
+- Upload HTML reports to a Google Cloud Storage bucket.
+- Uses [OpenID Connect](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform) — no secret keys or service account involved.
+
+## Why?
+
+- When tests are run, they generate **HTML reports.**
+
+- I want to upload the HTML reports to where it can be easily viewed without having to download first.
+
+- I have many projects, and I don’t want to manage the secret key in each project.
+
+  - [GitHub Actions supports OpenID Connect](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) which is [also supported by Google Cloud Platform](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform). It allows GitHub Actions to securely access the cloud service (e.g. Firebase Storage bucket) without having to store a secret key on GitHub Actions side.
+
 ## Usage
 
 ```yaml
