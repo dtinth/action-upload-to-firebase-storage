@@ -17,6 +17,10 @@ GitHub Actions to upload build/test artifacts (e.g. HTML test reports) to Fireba
 ## Usage
 
 ```yaml
+    permissions:
+      contents: read
+      id-token: write
+    steps:
       - uses: dtinth/action-upload-to-firebase-storage@main
         if: always()
         continue-on-error: true
